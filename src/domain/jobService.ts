@@ -14,6 +14,7 @@ import {
   updateStatus,
 } from "../repository/jobRepository";
 import { processVideos } from "./videoProcessor";
+import { NotFoundError } from '../errors/NotFoundError';
 
 export async function createJob(
   createJobRequest: CreateJobRequest
@@ -31,7 +32,7 @@ export async function createJob(
 export async function getStatus(id: string): Promise<GetJobStatusResponse> {
   const job = await getJob(id);
   if (!job) {
-    throw new Error(`job ${id} is not found`);
+    throw new NotFoundError(`job ${id} is not found`);
   }
   return new GetJobStatusResponse(Status[job.status]);
 }
