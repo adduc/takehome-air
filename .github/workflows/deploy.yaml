@@ -23,18 +23,24 @@ jobs:
       - run: npm run build
       - run: npm prune --production
       
-      # write server fingerprint to known_hosts
-      - run: >-
+      - name: Add SSH host fingerprint
+        run: >-
           mkdir ~/.ssh \
           && echo "${{ secrets.SERVER_FINGERPRINT }}" >> ~/.ssh/known_hosts
+        
+      - name: Write SSH key
+        run: >-
+          touch ~/.ssh/id_rsa \
+          && chmod 600 ~/.ssh/id_rsa \
+          && echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
       
-      # rsync dist and node_modules to prod
-      - run: >-
+      - name: Sync files to production
+        run: >-
           rsync -rvtal --delete \
             dist node_modules package.json package-lock.json \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_PATH }}
       
-      # restart the application
-      - run: >-
+      - name: Restart application
+        run: >-
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
             "sudo systemctl restart takehome-air"
