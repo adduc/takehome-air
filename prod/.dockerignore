@@ -1,0 +1,18 @@
+# git
+.git
+.gitignore
+
+# jlong uses mercurial, so we need to ignore these files
+.hg
+
+# node_modules
+node_modules
+
+# dev docker configuration
+dev
+
+# prod docker configuration
+prod
+
+# build output
+dist
