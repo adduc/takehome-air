@@ -23,6 +23,9 @@ jobs:
       - run: npm run build
       - run: npm prune --production
       
+      # write server fingerprint to known_hosts
+      - run: echo "${{ secrets.SERVER_FINGERPRINT }}" >> ~/.ssh/known_hosts
+      
       # rsync dist and node_modules to prod
       - run: >-
           rsync -rvtal --delete \
@@ -33,5 +36,3 @@ jobs:
       - run: >-
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
             "sudo systemctl restart takehome-air"
-
-# secrets: SERVER_HOST, SERVER_USER, SERVER_PATH, SSH_KEY
