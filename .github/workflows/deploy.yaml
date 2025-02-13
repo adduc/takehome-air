@@ -24,7 +24,9 @@ jobs:
       - run: npm prune --production
       
       # write server fingerprint to known_hosts
-      - run: echo "${{ secrets.SERVER_FINGERPRINT }}" >> ~/.ssh/known_hosts
+      - run: >-
+          mkdir ~/.ssh \
+          && echo "${{ secrets.SERVER_FINGERPRINT }}" >> ~/.ssh/known_hosts
       
       # rsync dist and node_modules to prod
       - run: >-
