@@ -1,0 +1,46 @@
+##
+# Build/Deploy into production
+#
+# @see https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions
+##
+
+name: Deploy
+
+on:
+  push:
+    branches: [ main, jlong/deployment-frequency ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm run build
+      - run: npm prune --production
+      
+      - name: Add SSH host fingerprint
+        run: >-
+          mkdir ~/.ssh \
+          && echo "${{ secrets.SERVER_FINGERPRINT }}" >> ~/.ssh/known_hosts
+        
+      - name: Write SSH key
+        run: >-
+          touch ~/.ssh/id_rsa \
+          && chmod 600 ~/.ssh/id_rsa \
+          && echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+      
+      - name: Sync files to production
+        run: >-
+          rsync -rvtal --delete \
+            dist node_modules package.json package-lock.json \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_PATH }}
+      
+      - name: Restart application
+        run: >-
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
+            "sudo systemctl restart takehome-air"
