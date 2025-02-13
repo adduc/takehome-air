@@ -1,23 +1,22 @@
 import { Job, Status } from "../domain/model/job";
 
-const jobs: Job[] = [];
+import * as jobRepositoryAws from "./jobRepositoryAws";
+import * as jobRepositoryMemory from "./jobRepositoryMemory";
 
-export function saveJob(job: Job) {
-  jobs.push(job);
+const repo = process.env.REPOSITORY === "aws" ? jobRepositoryAws : jobRepositoryMemory;
+
+export async function saveJob(job: Job): Promise<void> {
+  return repo.saveJob(job);
 }
 
-export function getJob(id: string): Job | undefined {
-  return jobs.find((job) => job.id === id);
+export async function getJob(id: string): Promise<Job | undefined> {
+  return repo.getJob(id);
 }
 
-export function getNextPendingJob(): Job | undefined {
-  return jobs.find((job) => job.status === Status.pending);
+export async function getNextPendingJob(): Promise<Job | undefined> {
+  return repo.getNextPendingJob();
 }
 
-export function updateStatus(id: string, status: Status) {
-  const job = getJob(id);
-  if (!job) {
-    throw new Error(`Job ${id} not found`);
-  }
-  job.status = status;
+export async function updateStatus(job: Job, status: Status): Promise<void> {
+  return repo.updateStatus(job, status);
 }
