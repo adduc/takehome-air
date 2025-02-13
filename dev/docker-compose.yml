@@ -1,0 +1,18 @@
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: dev/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ..:/app
+      - ~/.aws:/root/.aws
+    environment:
+      - NODE_ENV=development
+      - REPOSITORY=aws
+      # - REPOSITORY=memory
+      - JOBS_QUEUE_NAME=prod-concatenate-videos
+      - JOBS_TABLE_NAME=prod-concatenate-videos
+      

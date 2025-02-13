@@ -3,11 +3,11 @@ export class Destination {
 }
 
 export class CreateJobRequest {
-    constructor(public sourceVideoUrls:string[], public destination: Destination) { }
+    constructor(public sourceVideoUrls: string[], public destination: Destination) { }
 }
 
 export class CreateJobResponse {
-    constructor(public id: string) {}
+    constructor(public id: string) { }
 }
 
 export enum Status {
@@ -18,7 +18,15 @@ export enum Status {
 }
 
 export class Job {
-    constructor(public id: string, public sourceVideoUrls:string[], public destination: Destination, public status: Status) { }
+    constructor(
+        public id: string, 
+        public sourceVideoUrls: string[], 
+        public destination: Destination, 
+        public status: Status,
+
+        // job repository specific metadata (e.g. sqs receipt id)
+        public metadata?: any,
+    ) { }
 }
 
 export class GetJobStatusResponse {

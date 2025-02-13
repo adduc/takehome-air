@@ -43,9 +43,9 @@ export async function processNextJob() {
     return;
   }
   console.log(`processing job ${job.id}`);
-  await updateStatus(job.id, Status.inProgress);
+  await updateStatus(job, Status.inProgress);
 
   await processVideos(job);
 
-  await updateStatus(job.id, Status.done);
+  await updateStatus(job, Status.done);
 }
